@@ -1,15 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Xml.Linq;
-using System.Xml.XPath;
 
-using R5T.F0000;
-using R5T.L0030.Extensions;
 using R5T.T0131;
 using R5T.T0159;
 using R5T.T0162;
-using R5T.T0203;
 using R5T.T0212.F000;
 
 
@@ -17,10 +11,30 @@ namespace R5T.O0027.Internal
 {
     public partial interface IDocumentationCommentOperations : IValuesMarker
     {
-        public void Expand_InheritdocElements2(
+        public IEnumerable<MemberDocumentation> Expand_InheritdocElements(
+            IEnumerable<MemberDocumentation> memberDocumentations,
+            IDictionary<IIdentityName, MemberDocumentation> memberDocumentationsByIdentityName,
+            IDictionary<IIdentityName, MemberDocumentation> processedMemberDocumentationsByIdentityName,
+            IList<MissingDocumentationReference> missingDocumentationReferences,
+            ITextOutput textOutput)
+        {
+            foreach (var memberDocumentation in memberDocumentations)
+            {
+                var processedMemberDocumentation = this.Expand_InheritdocElements2(
+                    memberDocumentation,
+                    memberDocumentationsByIdentityName,
+                    processedMemberDocumentationsByIdentityName,
+                    missingDocumentationReferences,
+                    textOutput);
+
+                yield return processedMemberDocumentation;
+            }
+        }
+
+        public MemberDocumentation Expand_InheritdocElements2(
             MemberDocumentation memberDocumentation,
             IDictionary<IIdentityName, MemberDocumentation> memberDocumentationsByIdentityName,
-            IDictionary<IIdentityName, MemberDocumentation> processedDocumentationsByIdentityName,
+            IDictionary<IIdentityName, MemberDocumentation> processedMemberDocumentationsByIdentityName,
             IList<MissingDocumentationReference> missingDocumentationReferences,
             ITextOutput textOutput)
         {
@@ -38,30 +52,32 @@ namespace R5T.O0027.Internal
 
             this.Write_MemberElement(textOutput, memberDocumentation);
 
-            // Short-circuit if the member documentation has already been processed.
-            if (this.Should_ShortCircuit(
-                processedDocumentationsByIdentityName,
-                memberDocumentation,
-                textOutput))
-            {
-                return;
-            }
-
             // Start by creating a clone of the member documentation so that we don't modify the input member documentation.
             var processedMemberDocumentation = Instances.MemberDocumentationOperator.Clone_WithClonedMemberElement(memberDocumentation);
+
+            // Short-circuit if the member documentation has already been processed.
+            if (this.Should_ShortCircuit(
+                processedMemberDocumentationsByIdentityName,
+                processedMemberDocumentation,
+                textOutput))
+            {
+                return processedMemberDocumentation;
+            }
 
             this.Expand_CrefInheritdocElements(
                 processedMemberDocumentation,
                 memberDocumentationsByIdentityName,
-                processedDocumentationsByIdentityName,
+                processedMemberDocumentationsByIdentityName,
                 missingDocumentationReferences,
                 textOutput);
 
-            processedDocumentationsByIdentityName.Add(
+            processedMemberDocumentationsByIdentityName.Add(
                 processedMemberDocumentation.IdentityName,
                 processedMemberDocumentation);
 
             textOutput.Write_Information_NoFormatting($"Processed member '{memberDocumentation.IdentityName}'.");
+
+            return processedMemberDocumentation;
         }
     }
 }

@@ -4,7 +4,8 @@ using System.Linq;
 using System.Xml.Linq;
 using System.Xml.XPath;
 
-using R5T.F0000;
+using R5T.N0000;
+
 using R5T.L0030.Extensions;
 using R5T.T0131;
 using R5T.T0159;
@@ -289,10 +290,17 @@ namespace R5T.O0027.Internal
             {
                 textOutput.WriteInformation("Replacing from path...");
 
+                var xPathValue = "." + hasPath.Result.Value;
+
+                if(hasPath.Result.Value.Contains("descendant"))
+                {
+                    xPathValue = "./" + hasPath.Result.Value;
+                }
+
                 // Assume path could select multiple elements.
                 var elements = memberDocumentationForCref.MemberElement.Value.XPathSelectElements(
                     // Interprety XPath as from current node.
-                    "." + hasPath.Result.Value)
+                    xPathValue)
                     .ToArray();
 
                 // Don't replace with the selected elements themselves, but with their children.

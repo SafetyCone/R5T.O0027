@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
+using R5T.L0069.T001;
 using R5T.T0131;
 using R5T.T0159;
 using R5T.T0162;
@@ -57,7 +58,7 @@ namespace R5T.O0027
         /// For a project, get all recursive project references, the get all raw member documentation comments by identity name.
         /// This data is "raw" in the sense that no inheritdoc element substitution is performed.
         /// <para>
-        /// Note: all output <see cref="MemberDocumentation"/>s will share the same <see cref="ProjectDocumentationTarget"/>, that of the input project file path.
+        /// Note: all output <see cref="MemberDocumentation"/>s will share the same <see cref="L0069.T001.ProjectDocumentationTarget"/>, that of the input project file path.
         /// </para>
         /// </summary>
         public async Task<IDictionary<IIdentityName, MemberDocumentation>> Get_DocumentationComments_Recursive_Raw(IProjectFilePath projectFilePath)
@@ -91,7 +92,7 @@ namespace R5T.O0027
         /// For many projects, get all recursive project references, the get all raw member documentation comments by identity name.
         /// This data is "raw" in the sense that no inheritdoc element substitution is performed.
         /// <para>
-        /// Note: output <see cref="MemberDocumentation"/>s will use the <see cref="ProjectDocumentationTarget"/> of their associated input project file path.
+        /// Note: output <see cref="MemberDocumentation"/>s will use the <see cref="L0069.T001.ProjectDocumentationTarget"/> of their associated input project file path.
         /// </para>
         /// </summary>
         public Task<IDictionary<IIdentityName, MemberDocumentation>> Get_DocumentationComments_Recursive_Raw(
@@ -129,7 +130,7 @@ namespace R5T.O0027
 
             foreach (var pair in documentationFilePathsByProjectFilePath)
             {
-                if (!Instances.FileSystemOperator.FileExists(pair.Value.Value))
+                if (!Instances.FileSystemOperator.Exists_File(pair.Value.Value))
                 {
                     missingDocumentationFileProjectFilePaths.Add(pair.Key);
 
@@ -274,6 +275,29 @@ namespace R5T.O0027
             missingDocumentationReferences = tempMissingDocumentationReferences.ToArray();
 
             return processedDocumentationsByIdentityName;
+        }
+
+        public MemberDocumentation[] Expand_InheritdocElements(
+            IEnumerable<MemberDocumentation> memberDocumentations,
+            IDictionary<IIdentityName, MemberDocumentation> allMemberDocumentationsByIdentityName,
+            ITextOutput textOutput,
+            out MissingDocumentationReference[] missingDocumentationReferences)
+        {
+            var processedDocumentationsByIdentityName = new Dictionary<IIdentityName, MemberDocumentation>();
+
+            var tempMissingDocumentationReferences = new List<MissingDocumentationReference>();
+
+            var output = Internal.Expand_InheritdocElements(
+                memberDocumentations,
+                allMemberDocumentationsByIdentityName,
+                processedDocumentationsByIdentityName,
+                tempMissingDocumentationReferences,
+                textOutput)
+                .Now();
+
+            missingDocumentationReferences = tempMissingDocumentationReferences.ToArray();
+
+            return output;
         }
 
         public MemberDocumentation Expand_InheritdocElements(
