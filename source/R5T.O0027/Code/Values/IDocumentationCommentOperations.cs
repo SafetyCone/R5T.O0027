@@ -49,7 +49,7 @@ namespace R5T.O0027
                 textOutput,
                 out var localMissingDocumentationReferences);
 
-            missingDocumentationReferences.AddRange(localMissingDocumentationReferences);
+            missingDocumentationReferences.Add_Range(localMissingDocumentationReferences);
 
             return processedMemberDocumentationsByIdentityName;
         }
@@ -201,7 +201,7 @@ namespace R5T.O0027
                 textOutput,
                 out var localMissingDocumentationReferences);
 
-            missingDocumentationReferences.AddRange(localMissingDocumentationReferences);
+            missingDocumentationReferences.Add_Range(localMissingDocumentationReferences);
 
             return processedMemberDocumentationsByIdentityName;
         }
@@ -246,7 +246,7 @@ namespace R5T.O0027
                 textOutput,
                 out var localMissingDocumentationReferences);
 
-            missingDocumentationReferences.AddRange(localMissingDocumentationReferences);
+            missingDocumentationReferences.Add_Range(localMissingDocumentationReferences);
 
             return processedMemberDocumentationsByIdentityName;
         }
