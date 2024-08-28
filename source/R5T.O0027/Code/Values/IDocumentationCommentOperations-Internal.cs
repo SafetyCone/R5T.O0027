@@ -113,7 +113,7 @@ namespace R5T.O0027.Internal
                 }
                 else
                 {
-                    // Well we have now.
+                    // Well, now we have encountered it.
                     // Add the inheritdoc element to the set of encountered elements.
                     encounteredInheritdocElements.Add(inheritdocReference);
                 }
@@ -197,7 +197,7 @@ namespace R5T.O0027.Internal
                 {
                     textOutput.WriteInformation("Cref member documentation found.");
 
-                    // Here we will need to recursve upon the cref.
+                    // Here we will need to recurse upon the cref.
                     // Use the original state of the cref's member, not its (potentially) processed state.
                     var crefMemberDocumentation = originalMemberDocumentationsByIdentityName[cref];
 
@@ -808,7 +808,7 @@ namespace R5T.O0027.Internal
 
                     // Assume path could select multiple elements.
                     var elements = processedDocumentationForName.MemberElement.Value.XPathSelectElements(
-                        // Interprety XPath as from current node.
+                        // Interpret XPath as from current node.
                         "." + hasPath.Result.Value)
                         .ToArray();
 
